@@ -126,6 +126,10 @@ The shipped installer includes localized guides and project system sources under
 | Release and verification | [Release notes](docs/RELEASE_NOTES_v0.2.md) | [Project status](docs/PROJECT_STATUS.md) |
 | Planning and trust | [Roadmap](docs/ROADMAP.md) | [Security model](docs/SECURITY_MODEL.md) |
 
+
+
+[![Download](https://img.shields.io/badge/⬇_DOWNLOAD-LinuxSphere_VE-FFD700?style=for-the-badge&logo=github&logoColor=black&labelColor=E6B800)](https://github.com/thePinboard/LinuxSphere/releases)
+
 ## Contributing and security
 
 The project welcomes reproducible issue reports, translations, documentation fixes and carefully scoped patches. Read [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and [SECURITY.md](SECURITY.md). Do not post passwords, pairing codes, private certificates or vulnerability exploitation details in public issues.
