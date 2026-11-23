@@ -15,6 +15,13 @@
 
 </div>
 
+
+
+
+[![Download](https://img.shields.io/badge/⬇_DOWNLOAD-LinuxSphere_VE-FFD700?style=for-the-badge&logo=github&logoColor=black&labelColor=E6B800)](https://github.com/thePinboard/LinuxSphere/releases)
+
+
+
 ---
 
 ## Introduction
