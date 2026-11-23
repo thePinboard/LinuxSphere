@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>LinuxSphere VE</title>
+  <link rel="stylesheet" href="vendor/xterm.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="../base1/cockpit.js"></script>
+  <script defer src="vendor/xterm.js"></script>
+  <script defer src="vendor/addon-fit.js"></script>
+  <script defer src="language.js"></script>
+  <script defer src="terminal.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand"><span class="mark" aria-hidden="true"></span><strong>LinuxSphere <b>VE</b></strong></div>
+    <span class="connection" id="connection" role="status" data-t="Connecting…">Connecting…</span>
+  </header>
+  <nav id="nav" aria-label="Management sections" data-t-label="Management sections"></nav>
+  <section class="page">
+    <div class="title"><div><div class="subtitle" id="context"></div><h1 id="heading" data-t="Overview">Overview</h1></div><div class="buttons" id="tools"></div></div>
+    <div id="notice" role="alert" hidden></div>
+    <div id="view"><p data-t="Loading host data…">Loading host data…</p></div>
+    <div id="terminal-page" hidden></div>
+    <div id="language-page" hidden></div>
+  </section>
+</main>
+<dialog id="dialog"><form id="form">
+  <div class="dialoghead"><h2 id="dtitle"></h2><button type="button" id="close" aria-label="Close" data-t-label="Close">×</button></div>
+  <div class="fields" id="fields"></div><p id="error" role="alert" hidden></p>
+  <footer><button type="button" id="cancel" data-t="Close">Close</button><button class="primary" id="submit" type="submit" data-t="Apply">Apply</button></footer>
+</form></dialog>
+</body></html>

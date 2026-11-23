@@ -1,0 +1,3 @@
+# LinuxSphere VE 0.2 International ISO — SHA-256
+# Measured from the original v0.2 ISO supplied for documentation on 2026-11-23.
+0cc01ec79686cd90f0344fad62a40563a56b8857df27e57c545172e25f5fdd4a  LinuxSphere-VE-0.2-International-amd64.iso

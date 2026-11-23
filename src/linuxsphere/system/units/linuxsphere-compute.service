@@ -1,0 +1,13 @@
+[Unit]
+Description=Prepare LinuxSphere virtual networks and container image
+After=network.target libvirtd.service incus.service
+Wants=incus.service libvirtd.service
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /usr/lib/linuxsphere/compute.sh
+RemainAfterExit=yes
+TimeoutStartSec=240
+Restart=on-failure
+RestartSec=20
+[Install]
+WantedBy=multi-user.target

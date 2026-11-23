@@ -1,0 +1,105 @@
+LinuxSphere VE 0.2 | Installationsmedium für x86-64
+Basis: Debian GNU/Linux 13.8 · Stand 23. November 2026
+
+INSTALLATION
+1. Die ISO als CD/DVD einer VM einlegen oder als Abbild auf einen USB-Stick
+   schreiben. Das Schreiben des Abbilds ersetzt die Daten auf diesem Stick.
+2. Das Medium im BIOS- oder UEFI-Startmenü auswählen. Eine Rolle wählen.
+   Hybrid vereint Webverwaltung und lokale Virtualisierung und eignet sich
+   für den ersten einzelnen Server. Manager verwaltet andere Knoten. Worker
+   stellt Rechenleistung bereit. Storage nimmt verschlüsselte Sicherungen an.
+3. Hostname, Benutzer und Passwort festlegen. Der Debian-Installer zeigt
+   Partitionierung und das ausgewählte Ziellaufwerk vor dem Schreiben an.
+   Bei „gesamte Festplatte“ werden die bestehenden Daten des Ziels ersetzt.
+4. Vom installierten Laufwerk neu starten. An der Konsole steht die Adresse.
+   https://SERVER-IP:9090/linuxsphere im Browser öffnen und mit dem bei der
+   Installation angelegten Konto anmelden. Administrativen Zugriff in Cockpit
+   aktivieren. Unter „Sprache“ die Sprache des Browsers oder die System-Locale wählen. Das erste HTTPS-Zertifikat wird pro Host erzeugt.
+   Die Installation und das enthaltene Container-Abbild funktionieren offline.
+   Ethernet erleichtert die erste Einrichtung. Eigene Gast-ISOs über „Gäste“
+   hochladen. Freie Debian-Pakete und weitere Firmware lassen sich mit APT
+   ergänzen. Die Installationsrolle bleibt unter /etc/linuxsphere/role sichtbar.
+   Bei mehreren Ethernet-Anschlüssen den für die Installation verwendeten
+   Anschluss für die Verwaltung nutzen. Nach der Anmeldung zeigt „ip -br a“
+   die Adressen. Mit „sudo nmtui“ lassen sich Netzwerkprofile lokal anpassen.
+
+EINSTIEG
+• Planung für einen ersten Hybrid-Host: 2 logische CPUs, 4 GiB RAM und
+  20 GiB Speicher. Gäste und Sicherungen benötigen zusätzlichen Speicher.
+  Für KVM Intel VT-x bzw. AMD-V in der Firmware aktivieren. Der Host zeigt
+  KVM oder QEMU-Softwareemulation an.
+• „Gäste“ erstellt x86-64-VMs mit BIOS oder UEFI und lokalen QCOW2-Platten.
+  Die VM-Konsole sowie erweiterte Geräteverwaltung liegen unter
+  „Virtuelle Maschinen“. SafeChange kann die letzte Änderung der CPU- und
+  RAM-Zuordnung über „Rücknahme“ zurücksetzen. Gast-ISOs können nach der OS-Installation dort
+  ausgeworfen werden. Incus-Container verwenden ein eigenes NAT-Netz.
+  „sphere-mini“ ist ein kleines, offline verfügbares BusyBox-System für
+  Tests und Worker. Ein Debian-Vollsystem kann als Incus-Abbild importiert werden.
+• „Knoten“: Auf dem neuen Knoten eine Einladung erstellen. Auf dem Manager
+  Adresse, Alias und Code eintragen. Der Code bindet die Verbindung an
+  den SHA-256-Fingerabdruck und gilt einmal für zehn Minuten.
+  Dienstports: HTTPS-Webverwaltung 9090/TCP, Knoten-/Gast-API 9443/TCP,
+  SSH/SFTP 22/TCP. VM-VNC lauscht auf dem Loopback-Interface.
+• „Sicherungen“: Verwaltete Gäste geordnet anhalten. Der Wiederherstellungspunkt
+  enthält bei VMs die Konfiguration und die Platten, bei Containern den
+  Instanzexport. Wiederherstellung verwendet einen freien neuen Gastnamen.
+  Die Sicherungen werden mit Restic verschlüsselt und dedupliziert. Für
+  Wiederherstellung nach Hostverlust das Geheimnis aus
+  /var/lib/linuxsphere/private/restic.key separat sicher aufbewahren.
+  „Abgleichen“ kopiert fehlende Sicherungsdaten per SFTP zu einem Storage-
+  oder Hybrid-Knoten. „Zurückholen“ kopiert sie in das lokale Repository.
+  Der Schlüssel sowie die SFTP-Identität /var/lib/linuxsphere/private/vault_ed25519
+  gehören zur gesondert aufzubewahrenden Wiederherstellungsinformation.
+• SphereLink spricht das HTTPS-Protokoll von DroidSphere VE 2.0. Auf
+  dem Android-Gerät die Freigabe mit Admin-Code starten und den angezeigten
+  Fingerabdruck übernehmen. Ausgeschaltete Gäste als verschlüsselte .dscap-
+  Kapsel abholen und unter neuem Gast auf dem Handy wiederherstellen.
+  PC-Kapseln der BIOS- und UEFI-Profile lassen sich mit „Als PC-VM
+  importieren“ als ausgeschaltete x86-VM auf einem Worker/Hybrid anlegen.
+  Der Import prüft die verschlüsselten Blöcke und die SHA-256-Werte der
+  enthaltenen Dateien. UEFI verwendet einen frischen Variablenspeicher.
+  Ein abgebrochener Kapseltransfer beginnt von vorn. Diese Ausgabe startet
+  keine ARM-Smartphone-Gäste als x86-64-VM.
+• SphereFusion verbindet eine vorhandene Desktop-VM mit einem oder mehreren
+  laufenden, unprivilegierten LinuxSphere-Containern. Unabhängige Aufträge
+  laufen auf den ausgewählten Workern. Die Weboberfläche zeigt je Auftrag
+  Knoten, Container, Exit-Code und Ausgabe. Beispiel für zwei unabhängige Jobs:
+    [{"argv":["/bin/hostname"]},{"argv":["/bin/uname","-m"]}]
+  Der Desktop kann Aufträge selbst übermitteln: In SphereFusion „Gastzugang“
+  wählen, JSON im Gast als ~/.config/linuxsphere/fusion.json mit Modus 0600
+  ablegen, den Python-3-Client linuxsphere/system/host/sphere-run vom Medium
+  kopieren und mit „python3 sphere-run jobs.json“ aufrufen. Falls ein Gast
+  keine Route zum Manager hat, seine Netzwerkkonfiguration prüfen.
+  Normale Einzelprogramme der Desktop-VM verwenden die vCPUs und den RAM
+  ihres eigenen Hosts. Transparenter gemeinsamer CPU-/RAM-Betrieb einer
+  einzelnen VM über mehrere physische Hosts ist ein Forschungsziel.
+
+ADMINISTRATION
+sudo dsctl status              lokale Hardware, Ressourcen, Gäste
+sudo dsctl nodes               alle verbundenen Knoten und ihre Ressourcen
+sudo dsctl invite              einmaligen Verbindungscode erzeugen
+sudo dsctl join ALIAS ADRESSE  Code interaktiv eingeben
+sudo dsctl revoke-all          eingehende Managerfreigaben widerrufen
+sudo dsctl --help              weitere lokale Befehle
+journalctl -u linuxsphere-compute -u linuxsphere-api
+journalctl -t linuxsphere
+
+Quelltext der LinuxSphere-Verwaltung: linuxsphere/system auf diesem Medium
+und /usr/lib/linuxsphere auf dem installierten System. Die Debian-Pakete
+enthalten ihre jeweiligen Copyright-Hinweise unter /usr/share/doc/.
+
+
+CLI UND SPRACHE
+Unter „CLI“ stehen die interaktive Host-Shell, die VM-Verwaltung mit virsh,
+die serielle Gastkonsole und eine Shell im laufenden Incus-Container bereit.
+Mit sudo lassen sich Dienste, Netzwerk, Pakete, Speicher und Gastdefinitionen
+verwalten. Für den Bildschirm einer grafischen VM „Gäste“ → „VM-Konsole“ öffnen.
+Der Sprachwechsel für den Browser lädt die Weboberfläche neu. Eine neue
+Host-Locale gilt für neue Sitzungen. Gastsysteme verwalten ihre eigenen Sprachen.
+Deutsch, Englisch, Französisch und Spanisch sind enthalten.
+Weitere Dashboardsprachen lassen sich über JSON-Sprachpakete installieren.
+  dsctl language template > meine-sprache.json
+  sudo dsctl language install meine-sprache.json
+  sudo dsctl language set de_DE.UTF-8
+Vor dem Installieren der Vorlage Code, Eigenname, Locale und Übersetzungen
+eintragen. Die englischen Schlüssel und Platzhalter wie {node} beibehalten.

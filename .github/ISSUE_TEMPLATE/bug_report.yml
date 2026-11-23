@@ -1,0 +1,46 @@
+name: Bug report
+description: Report a reproducible problem without posting secrets.
+title: '[Bug]: '
+labels: ['type:bug']
+body:
+  - type: markdown
+    attributes:
+      value: 'Do **not** post vulnerabilities, passwords, tokens, private certificates or sensitive VM data here. See SECURITY.md.'
+  - type: input
+    id: version
+    attributes:
+      label: LinuxSphere version
+      placeholder: '0.2 International, ISO SHA-256 if relevant'
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: 'Role, BIOS/UEFI, CPU architecture, RAM and optional nested virtualization (sanitized).'
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: 'List exact non-sensitive steps.'
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs or screenshots
+      description: 'Remove IPs, hostnames, certificates, passwords, tokens and personal data if needed.'

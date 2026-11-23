@@ -1,0 +1,23 @@
+name: Feature request
+description: Suggest a scoped improvement to LinuxSphere.
+title: '[Feature]: '
+labels: ['type:feature']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+      description: 'What practical problem should this solve?'
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: 'Explain the workflow, compatibility assumptions and expected result.'
+    validations:
+      required: true
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: Security, compatibility and resource considerations

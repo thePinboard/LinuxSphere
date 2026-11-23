@@ -1,0 +1,74 @@
+LinuxSphere VE 0.2 International | Serveurs x86-64 | Debian 13.8
+
+INSTALLATION ET PREMIÈRE CONNEXION
+Démarrez l’ISO en BIOS ou UEFI comme DVD virtuel ou depuis une clé USB.
+L’écriture de l’image remplace le contenu de la clé. Sélectionnez Hybride
+pour gérer et exécuter des invités sur le même serveur. Gestionnaire pilote
+les autres nœuds, Nœud de calcul exécute les invités et Stockage reçoit
+les sauvegardes. Choisissez la langue, le pays et le clavier, créez votre
+compte puis vérifiez le disque et le partitionnement avant de confirmer.
+L’option de disque entier remplace les données existantes.
+Retirez le support, redémarrez et ouvrez https://IP-DU-SERVEUR:9090/linuxsphere.
+Connectez-vous avec votre compte et activez l’accès administrateur dans
+l’en-tête Cockpit. ip -br a affiche les adresses et sudo nmtui configure
+le réseau. Pour un premier essai hybride, prévoyez 2 processeurs logiques,
+4 Gio de RAM et 20 Gio de disque, plus les ressources réservées aux invités.
+L’installation et l’image de conteneur incluse fonctionnent hors ligne.
+
+LANGUE ET TERMINAL
+Sous Langue, choisissez la langue du navigateur ou celle du système hôte.
+Changer la langue du navigateur recharge Cockpit et ferme la session de
+terminal. Les paramètres régionaux de l’hôte s’appliquent aux nouvelles
+connexions. Chaque système invité dispose de ses propres réglages.
+LinuxSphere inclut l’anglais, l’allemand, l’espagnol et le français.
+Pour ajouter une langue, exportez le modèle, modifiez code, name et locale,
+puis traduisez chaque valeur sans modifier les clés anglaises ni les
+paramètres tels que {node}. Installez le fichier et rouvrez la console.
+  dsctl language template > ma-langue.json
+  sudo dsctl language install ma-langue.json
+  sudo dsctl language set fr_FR.UTF-8
+
+Ouvrez CLI puis Ouvrir le terminal. Le shell utilise votre compte. Les
+tâches privilégiées passent par sudo. Le terminal prend en charge nano,
+nmtui et les autres programmes interactifs. Pour les invités locaux,
+sélectionnez un shell Incus ou la console série d’une VM en cours.
+La connexion série exige une console configurée dans la VM. Ctrl+] quitte
+la console. L’écran graphique se trouve dans Invités → Console de la VM.
+Pour un nœud distant, ouvrez sa CLI et connectez-vous sur cet hôte.
+  sudo virsh -c qemu:///system edit NOM_VM
+  sudo incus config edit NOM_CONTENEUR
+  sudo incus exec NOM_CONTENEUR -- /bin/sh
+  sudo dsctl status
+  sudo dsctl nodes
+
+INVITÉS, NŒUDS ET SAUVEGARDES
+Invités permet d’importer des ISO et de créer des VM x86-64 BIOS/UEFI ou
+des conteneurs Incus. Sélectionnez le même fichier pour reprendre un
+transfert ISO interrompu. SafeChange annule la dernière allocation CPU/RAM.
+Une image BusyBox sphere-mini est disponible hors ligne. Les réseaux
+virtuels disposent d’un accès NAT. Pour associer un nœud, créez une
+invitation sur celui-ci, puis saisissez son adresse, son alias et son code
+sur le gestionnaire. Le code à usage unique contient l’empreinte du
+certificat et expire après dix minutes. Ports TCP 9090 (web), 9443 (API)
+et 22 (SSH/SFTP).
+Arrêtez l’invité avant la sauvegarde. Restic chiffre et déduplique les
+données. Restaurez sous un nouveau nom. La synchronisation SFTP réplique
+les sauvegardes vers un nœud Stockage ou Hybride. Conservez séparément
+/var/lib/linuxsphere/private/restic.key et
+/var/lib/linuxsphere/private/vault_ed25519 pour la récupération.
+
+SPHERELINK ET SPHEREFUSION
+Activez le service HTTPS DroidSphere VE 2.0 sur le téléphone, puis vérifiez
+son empreinte et utilisez le code administrateur. Récupérez les capsules
+.dscap des invités arrêtés et restaurez-les sur le téléphone. Les profils
+PC x86 BIOS/UEFI s’importent en VM LinuxSphere. L’importation vérifie
+l’intégrité et crée un magasin UEFI neuf. Un transfert de capsule interrompu
+reprend depuis le début. Les profils de téléphone ARM s’utilisent sur DroidSphere.
+SphereFusion associe une VM de bureau à des conteneurs de calcul non
+privilégiés sur plusieurs nœuds. Chaque tâche indépendante reçoit un
+résultat, un code de sortie et le nom du nœud. Les programmes ordinaires de
+la VM utilisent les ressources de son hôte. Pour soumettre des tâches depuis
+la VM, générez un accès invité, installez sa configuration au mode 0600 sous
+~/.config/linuxsphere/fusion.json et lancez python3 sphere-run jobs.json.
+Le client, le code source et les notices de licence de la console se trouvent
+sous linuxsphere/system sur l’ISO et /usr/lib/linuxsphere sur l’hôte.

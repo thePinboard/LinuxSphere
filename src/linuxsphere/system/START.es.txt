@@ -1,0 +1,72 @@
+LinuxSphere VE 0.2 International | Servidores x86-64 | Debian 13.8
+
+INSTALACIÓN Y PRIMER ACCESO
+Arranca la ISO con BIOS o UEFI como DVD virtual o desde una memoria USB.
+Escribir la imagen reemplaza el contenido de la memoria. Elige Híbrido
+para gestionar y ejecutar invitados en el mismo servidor. Administrador
+gestiona los nodos, Nodo de cálculo ejecuta invitados y Almacenamiento
+recibe copias cifradas. Elige idioma, país y teclado. Crea tu cuenta y
+revisa el disco y las particiones antes de confirmar. La opción de disco
+completo reemplaza los datos existentes. Retira el medio y reinicia.
+Abre https://IP-DEL-SERVIDOR:9090/linuxsphere e inicia sesión con la cuenta
+que creaste. Activa el acceso administrativo en la cabecera de Cockpit.
+ip -br a muestra las direcciones y sudo nmtui permite configurar la red.
+Para una primera prueba híbrida reserva 2 CPU lógicas, 4 GiB de RAM y
+20 GiB de disco, además de los recursos de los invitados. La instalación
+y la imagen de contenedor incluida funcionan sin Internet.
+
+IDIOMA Y TERMINAL
+En Idioma puedes elegir el idioma del navegador o seguir el del host.
+Cambiar el idioma del navegador recarga Cockpit y cierra el terminal.
+La configuración regional del host se aplica a las nuevas sesiones. Cada
+sistema invitado controla sus propios ajustes. LinuxSphere incluye español,
+inglés, alemán y francés. Para añadir un idioma, exporta la plantilla,
+edita code, name y locale y traduce los valores. Conserva las claves en
+inglés y los marcadores como {node}. Instala el archivo y reabre el panel.
+  dsctl language template > mi-idioma.json
+  sudo dsctl language install mi-idioma.json
+  sudo dsctl language set es_ES.UTF-8
+
+Abre CLI y pulsa Abrir terminal. La shell utiliza tu cuenta. Usa sudo para
+tareas privilegiadas. Puedes ejecutar programas interactivos como nano y
+nmtui. Para un invitado local elige la shell de un contenedor Incus o la
+consola serie de una VM en ejecución. La VM debe tener una consola serie
+configurada. Ctrl+] desconecta. Para su pantalla gráfica, abre Invitados →
+Consola de la VM. Para un nodo remoto, abre su CLI e inicia sesión allí.
+  sudo virsh -c qemu:///system edit NOMBRE_VM
+  sudo incus config edit NOMBRE_CONTENEDOR
+  sudo incus exec NOMBRE_CONTENEDOR -- /bin/sh
+  sudo dsctl status
+  sudo dsctl nodes
+
+INVITADOS, NODOS Y COPIAS
+Desde Invitados puedes subir imágenes ISO y crear VM x86-64 BIOS/UEFI o
+contenedores Incus. Selecciona el mismo archivo para reanudar una carga
+ISO interrumpida. SafeChange permite deshacer la última asignación de
+CPU y RAM. La imagen BusyBox sphere-mini está disponible sin conexión.
+Las redes virtuales usan NAT. Para conectar un nodo, crea una invitación
+en él e introduce su dirección, alias y código en el administrador.
+El código de un solo uso incluye la huella del certificado y caduca en
+diez minutos. Puertos TCP 9090 (web), 9443 (API) y 22 (SSH/SFTP).
+Apaga el invitado antes de crear la copia. Restic cifra y deduplica los
+datos. Restaura con un nombre nuevo. La sincronización SFTP replica las
+copias a un nodo de almacenamiento o híbrido. Conserva por separado
+/var/lib/linuxsphere/private/restic.key y
+/var/lib/linuxsphere/private/vault_ed25519 para la recuperación.
+
+SPHERELINK Y SPHEREFUSION
+Activa el servicio HTTPS de DroidSphere VE 2.0 en el teléfono, comprueba
+la huella e introduce el código de administrador. Recupera cápsulas .dscap
+de invitados apagados y restáuralas en el teléfono. Los perfiles de PC
+x86 BIOS/UEFI se pueden importar como VM LinuxSphere. Se verifica la
+integridad y se crea un almacén UEFI nuevo. Un traslado de cápsula
+interrumpido se inicia de nuevo. Los perfiles de teléfono ARM se ejecutan
+en DroidSphere.
+SphereFusion asocia una VM de escritorio con contenedores de cálculo sin
+privilegios en diferentes nodos. Cada tarea independiente devuelve salida,
+código y nodo. Los programas ordinarios de la VM usan los recursos de su
+host. Para enviar tareas desde la VM, genera el acceso del invitado, guarda
+la configuración en ~/.config/linuxsphere/fusion.json con permisos 0600 y
+ejecuta python3 sphere-run jobs.json. El cliente, el código fuente y las
+licencias del terminal están en linuxsphere/system en la ISO y en
+/usr/lib/linuxsphere después de la instalación.

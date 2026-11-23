@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""Send independent jobs from a desktop VM to a LinuxSphere group."""
+import argparse,hashlib,hmac,http.client,json,os,ssl,sys
+from urllib.parse import urlsplit
+# The guest client also works when copied on its own.
+sys.path.insert(0, '/usr/lib/linuxsphere/host')
+try:
+    from languages import tr, language
+except ImportError:
+    def language():
+        return (os.getenv('LC_ALL') or os.getenv('LC_MESSAGES') or os.getenv('LANG','en')).split('.')[0].split('_')[0].lower()
+    translations = {'de': {'Submit desktop jobs to the assigned workers.': 'Aufträge aus der Desktop-VM an die zugeteilten Worker senden.', 'JSON file containing an array of argv jobs, or - for stdin': 'JSON-Datei mit einer Liste von argv-Aufträgen, oder - für stdin', 'Fingerprint mismatch.': 'Fingerabdruck stimmt nicht überein.', 'Invalid configuration.': 'Ungültige Konfiguration.'}, 'es': {'Submit desktop jobs to the assigned workers.': 'Enviar tareas del escritorio a los nodos asignados.', 'JSON file containing an array of argv jobs, or - for stdin': 'Archivo JSON con una lista de tareas argv, o - para la entrada estándar', 'Fingerprint mismatch.': 'La huella no coincide.', 'Invalid configuration.': 'Configuración no válida.'}, 'fr': {'Submit desktop jobs to the assigned workers.': 'Envoyer les tâches du bureau aux nœuds de calcul affectés.', 'JSON file containing an array of argv jobs, or - for stdin': 'Fichier JSON contenant une liste de tâches argv, ou - pour l’entrée standard', 'Fingerprint mismatch.': 'L’empreinte ne correspond pas.', 'Invalid configuration.': 'Configuration incorrecte.'}}
+    def tr(message):
+        return translations.get(language(), {}).get(message, message)
+
+p=argparse.ArgumentParser(description=tr('Submit desktop jobs to the assigned workers.'))
+p.add_argument('--config',default=os.path.expanduser('~/.config/linuxsphere/fusion.json'))
+p.add_argument('jobs',help=tr('JSON file containing an array of argv jobs, or - for stdin'))
+a=p.parse_args()
+try:
+    with open(a.config) as f:c=json.load(f)
+    u=urlsplit(c['url']);assert u.scheme=='https' and u.hostname and not u.username
+    ctx=ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT);ctx.check_hostname=False;ctx.verify_mode=ssl.CERT_NONE;ctx.minimum_version=ssl.TLSVersion.TLSv1_2
+    conn=http.client.HTTPSConnection(u.hostname,u.port or 9443,context=ctx,timeout=3600);conn.connect()
+    if not hmac.compare_digest(hashlib.sha256(conn.sock.getpeercert(True)).hexdigest(),c['pin'].lower()):raise ValueError(tr('Fingerprint mismatch.'))
+    if a.jobs=='-':jobs=json.load(sys.stdin)
+    else:
+        with open(a.jobs) as f:jobs=json.load(f)
+    conn.request('POST','/v1/fusion',json.dumps({'name':c['group'],'jobs':jobs}).encode(),headers={'Authorization':'Bearer '+c['key'],'Content-Type':'application/json','Accept-Language':language()})
+    res=conn.getresponse();data=json.load(res);print(json.dumps(data,ensure_ascii=False,indent=2));sys.exit(int(res.status!=200 or any(row['code'] for row in data.get('results',[]))))
+except (OSError,ValueError,KeyError,AssertionError) as e:sys.exit(str(e) or tr('Invalid configuration.'))

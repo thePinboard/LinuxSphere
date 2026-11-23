@@ -1,0 +1,118 @@
+LinuxSphere VE 0.2 International | x86-64 installation media
+Debian GNU/Linux 13.8 | English guide
+Deutsch: START.de.txt   Français: START.fr.txt   Español: START.es.txt
+
+INSTALL AND SIGN IN
+1. Attach the ISO as a virtual DVD or write the whole image to a USB stick.
+   Writing an image replaces the contents of the selected stick.
+2. Boot using BIOS or UEFI. Choose Install Hybrid for a first server with
+   a management console and local guests. Manager controls connected nodes,
+   Worker runs guests, and Storage accepts encrypted backups.
+3. Choose your installation language, country and keyboard layout. Set the
+   hostname, create your user and password, and choose a target disk. Review
+   partition changes before committing them. The guided whole-disk option
+   replaces existing data on that disk. Ethernet makes initial setup easier.
+4. Remove the medium and boot from the installed disk. Open
+   https://SERVER-IP:9090/linuxsphere and sign in with your installation
+   account. Enable administrative access in the Cockpit header for management.
+   Each server creates its own HTTPS certificate. At the console, ip -br a
+   shows interface addresses and sudo nmtui opens network configuration.
+   Installation and the included container image work offline.
+5. For a first hybrid test, allow 2 logical CPUs, 4 GiB of RAM and 20 GiB
+   of disk space. Reserve additional resources for guests and backups.
+   Enable Intel VT-x or AMD-V for hardware acceleration. The dashboard
+   shows the available KVM or QEMU software-emulation mode.
+
+CHOOSE YOUR LANGUAGE
+On the Language page, choose the Web interface language for this browser.
+The choice also applies to Cockpit. Applying it reloads the web console and
+closes open terminal sessions. Choose Use the host language to follow the
+default configured by the administrator. The Host language and region
+setting changes the Debian locale for new sessions. Existing processes
+keep their environment. Reopen the terminal to use the new locale.
+English, German, Spanish and French LinuxSphere language packs are included.
+Debian offers additional UTF-8 locales. Third-party applications supply their
+own translations. Each guest configures its own language and keyboard.
+
+To add a LinuxSphere translation:
+  dsctl language template > my-language.json
+  sudo dsctl language install my-language.json
+Edit code (for example it), name (Italiano), locale (it_IT.UTF-8), and every
+message value before installing. Keep the English keys and named placeholders
+such as {node}. Run dsctl language list for supported OS locales. Reopen the
+dashboard to select the new pack. A custom pack is stored under
+/etc/linuxsphere/languages/. Example of setting a host default:
+  sudo dsctl language set en_GB.UTF-8
+
+USE THE INTERACTIVE CLI
+Open CLI in the LinuxSphere menu and select Open terminal. The host shell
+uses the signed-in account. Use sudo when a task requires administrator
+privileges. Programs such as nano and nmtui support full-screen interaction.
+Sessions remain active while switching LinuxSphere pages inside the dashboard.
+End session closes the terminal. Browser reload and sign-out also end it.
+
+Host settings and packages           sudo nmtui, systemctl, apt, sudoedit
+VM settings, NICs, disks, boot      sudo virsh -c qemu:///system edit VM_NAME
+Interactive VM management           select VM management (virsh), then help
+Container settings and devices      sudo incus config edit CONTAINER_NAME
+Shell in a running container        select Container shell, then the container
+Running VM guest serial console     select VM serial console and the VM
+Graphical VM display                Guests → VM console
+A VM must expose a configured serial console for guest login over serial.
+Ctrl+] detaches. Guest logins use the guest's own credentials. On a connected
+node select Open node CLI and sign in there. Node pairing grants management
+operations. Terminal access uses a separately authenticated host login.
+
+MANAGE GUESTS AND NODES
+Guests creates x86-64 VMs with BIOS or UEFI, local QCOW2 disks, and Incus
+containers with their own NAT network. Upload guest ISO images in Guests.
+Select the same file to resume an interrupted ISO upload. Use VM console
+for advanced VM devices, graphical access and ejecting installation media.
+SafeChange can undo the last CPU and RAM allocation change. The offline
+sphere-mini BusyBox image is intended for small test containers and workers.
+Additional Incus images can be imported.
+To connect another host, create an invitation on it. On the manager enter
+its address, alias and invitation code in Nodes. The code pins the certificate
+fingerprint, is single use and expires in ten minutes. Management uses
+TCP 9090, the node and guest API TCP 9443, and SSH/SFTP TCP 22. Guest VNC
+listens on the local loopback interface.
+
+BACKUPS AND SPHERELINK
+Power off a managed guest before backup. Restic keeps encrypted,
+deduplicated restore points. A VM restore point includes its configuration
+and disks. A container restore point includes the instance export.
+Restore to a new unused name. Synchronize copies missing backup data to
+a paired Storage or Hybrid host over SFTP and can retrieve it again. Keep
+separate, confidential recovery copies of /var/lib/linuxsphere/private/restic.key
+and /var/lib/linuxsphere/private/vault_ed25519.
+SphereLink uses the DroidSphere VE 2.0 HTTPS service. Enable access with
+an administrator code on the phone, verify its fingerprint and connect.
+Retrieve powered-off guests as encrypted .dscap capsules or restore a capsule
+as a new guest on the phone. Import compatible x86 BIOS/UEFI PC capsules as
+powered-off VMs on a Worker or Hybrid node. Contents and SHA-256 values are
+verified. UEFI receives a fresh variable store. Restart interrupted capsule
+transfers. ARM phone profiles run on DroidSphere.
+
+SPHEREFUSION
+Combine a desktop VM with running, unprivileged worker containers. Independent
+jobs execute on the selected nodes. The dashboard reports each worker, result,
+exit code and output. For example:
+  [{"argv":["/bin/hostname"]},{"argv":["/bin/uname","-m"]}]
+To submit jobs from a desktop, generate Guest access in SphereFusion. Save
+the JSON as ~/.config/linuxsphere/fusion.json (mode 0600) in the guest.
+Copy linuxsphere/system/host/sphere-run from this medium and run
+python3 sphere-run jobs.json. The guest needs a route to the manager.
+Ordinary desktop software uses the CPU and memory of the VM's own host.
+
+SYSTEM TOOLS AND SOURCE
+  sudo dsctl status          Local hardware, resources and guests
+  sudo dsctl nodes           Connected nodes and their resources
+  sudo dsctl invite          Create a short-lived invitation
+  sudo dsctl join ALIAS ADDRESS
+  sudo dsctl revoke-all      Revoke inbound manager grants
+  sudo dsctl --help          Command reference
+  journalctl -u linuxsphere-compute -u linuxsphere-api
+LinuxSphere management source is in linuxsphere/system on this medium
+and /usr/lib/linuxsphere after installation. Debian package copyright
+notices are under /usr/share/doc/. Terminal library licenses accompany
+the files in console/vendor/.

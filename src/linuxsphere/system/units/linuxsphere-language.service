@@ -1,0 +1,10 @@
+[Unit]
+Description=Update the localized LinuxSphere console greeting
+After=local-fs.target
+Before=getty.target
+[Service]
+Type=oneshot
+WorkingDirectory=/usr/lib/linuxsphere/host
+ExecStart=/usr/bin/python3 -c "import languages; languages.banner()"
+[Install]
+WantedBy=multi-user.target

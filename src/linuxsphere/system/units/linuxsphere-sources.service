@@ -1,0 +1,10 @@
+[Unit]
+Description=Enable Debian update sources after offline installation
+ConditionPathExists=!/var/lib/linuxsphere/.sources-ready
+Before=apt-daily.service apt-daily-upgrade.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/install -m 0644 /usr/lib/linuxsphere/debian-sources.list /etc/apt/sources.list
+ExecStart=/usr/bin/touch /var/lib/linuxsphere/.sources-ready
+[Install]
+WantedBy=multi-user.target

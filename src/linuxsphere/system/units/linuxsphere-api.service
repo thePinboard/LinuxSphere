@@ -1,0 +1,11 @@
+[Unit]
+Description=LinuxSphere node API
+After=network.target
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/lib/linuxsphere/host/api.py
+Restart=on-failure
+RestartSec=3
+UMask=0077
+[Install]
+WantedBy=multi-user.target

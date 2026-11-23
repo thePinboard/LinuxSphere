@@ -1,0 +1,29 @@
+# Ignore build artifacts and private infrastructure data.
+*.iso
+*.img
+*.qcow2
+*.raw
+*.vmdk
+*.vdi
+*.dscap
+*.apk
+*.key
+*.pem
+*.p12
+*.pfx
+*.kdbx
+*.sqlite
+*.db
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.venv/
+node_modules/
+dist/
+build/
+.cache/
+.DS_Store
+Thumbs.db
+# Keep official release binaries in GitHub Releases, not Git history.

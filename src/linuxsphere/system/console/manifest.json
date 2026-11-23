@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "requires": {"cockpit": "300"},
+  "menu": {"index": {"label": "LinuxSphere VE", "order": 1}}
+}
