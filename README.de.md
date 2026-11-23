@@ -15,6 +15,10 @@
 
 </div>
 
+
+[![Download](https://img.shields.io/badge/⬇_DOWNLOAD-LinuxSphere_VE-FFD700?style=for-the-badge&logo=github&logoColor=black&labelColor=E6B800)](https://github.com/thePinboard/LinuxSphere/releases)
+
+
 ---
 
 ## Über das Projekt
@@ -62,6 +66,11 @@ Zum gemeinsamen Projektökosystem gehört **DroidSphere**: eine **separate Andro
 **Planungswert für erste Tests:** 2 logische CPUs, 4 GiB RAM und 20 GiB Systemspeicher zuzüglich Speicherkapazität für Gäste und Backups. Intel VT-x bzw. AMD-V wird empfohlen.
 
 Vollständiger Leitfaden: [Installation auf Deutsch](docs/de/INSTALLATION.md).
+
+
+
+[![Download](https://img.shields.io/badge/⬇_DOWNLOAD-LinuxSphere_VE-FFD700?style=for-the-badge&logo=github&logoColor=black&labelColor=E6B800)](https://github.com/thePinboard/LinuxSphere/releases)
+
 
 ## Architektur im Überblick
 
